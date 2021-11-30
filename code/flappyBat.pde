@@ -518,6 +518,7 @@ void livesLeft() {
   }
 
   /** Lives Left are Greater than 1 **/
+  /** Game Over Screen **/
 
   if (livesLeft >= 1) {
 
@@ -529,7 +530,6 @@ void livesLeft() {
     // changes font
     animatedFont = createFont("yoster.ttf", 25);
     textFont(animatedFont);
-
 
     if (score == 0 && highScore == 0) {
       text("Aww cmon try again!", width-500, height-315); // displays text if player has a score and high score of 0
@@ -548,6 +548,7 @@ void livesLeft() {
   } // if lives of player are still left
 
   /** Lives Left are 0 **/
+  /** Game Finished Screen **/
 
   else {
 
@@ -561,7 +562,7 @@ void livesLeft() {
 
     textSize(23);// changes text size for the repeat game text
 
-    text("Would you like to continue playing or not?", width/2-250, height-300); // end screen game finished text
+    text("Would you like to continue playing or not?", width/2-250, height-300); // game finished text
     text("Press Y to continue and N to not.", width/2-200, height-250); // game finished text asking to user to continue with a new game or close the program
 
     // styling of lives left text
