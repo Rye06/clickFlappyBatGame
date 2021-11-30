@@ -1,2 +1,2 @@
-# Flappy Bat
+# Flappy Bat 🦇
 Created By Shaurya (Rye)
