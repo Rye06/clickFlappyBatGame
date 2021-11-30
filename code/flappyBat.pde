@@ -19,9 +19,10 @@ PImage start; // start screen image
 PImage backgroundPic; // background image
 PImage topWall; // top wall image
 PImage bottomWall; // bottom wall image
-PImage end; // end overlay image
+PImage gameOver; // game over image
 PImage gameFinished; // game finished image
 PImage heart; // heart image
+PImage maxScoreScreen; // max score screen image
 
 /** Animated Font **/
 
@@ -46,7 +47,7 @@ int heartX = 0;
 /** Coordinates and Gravity **/
 
 int backgroundX; // x-axis of the background image
-int endX; // x axis of the end screen
+int gameOverX; // x axis of the game over screen
 int gameFinishedX; // x axis of the game finished screen
 
 int batX = 0; // x-axis of the bat
@@ -64,9 +65,9 @@ String gameState; // state of the game
 // 3 states-
 
 // 1. START Screen
-// 2. PLAY/Main Screen (called background screen)
+// 2. PLAY/Main Screen (also called "backgroundPic" or as background screen)
 // 3. END GAME Screen (Game Over/Game Finished)
-// 4. Max Score Screen (If the Player Reaches)
+// 4. Max Score Screen (maxScoreScreen) (Called only if the Player Reaches the Max Score)
 
 /** Other Crucial Variables **/
 
@@ -83,7 +84,6 @@ int livesLeft = 3; // 3 lives of player
 
 int maxScore = 100; // max score of the game
 boolean maxScoreOnce = false; // checks to see if the user has reached max score once or not
-PImage maxScoreScreen; // max score screen image
 
 /** Counter of Loop **/
 
@@ -110,7 +110,7 @@ void setup()
   backgroundX = 0;
   gravity = 0;
   score = 0;
-  endX = 0;
+  gameOverX = 0;
   gameFinishedX = 0;
   heartX = 0;
 
@@ -128,7 +128,7 @@ void setup()
 
   backgroundPic = loadImage("background.png"); // loads background image
   start = loadImage("start.png"); // loads start screen image
-  end = loadImage("gameOver.png"); // loads end screen overlay image
+  gameOver = loadImage("gameOver.png"); // loads game over screen overlay image
   maxScoreScreen = loadImage("maxScoreScreen.png"); // loads max score screen overlay image
   topWall = loadImage("wall.png"); // loads wall image
   bottomWall = loadImage("wall.png"); // loads wall image
@@ -149,7 +149,7 @@ void setup()
 
   bats = new PImage[frames]; // initializes the bat array
 
-  initBat(); // draw the bat
+  initBat(); // draws the bat
 
   /** Intializes the Wall Coordinates **/
 
@@ -177,13 +177,13 @@ void draw()
 {
 
   /****************************************************
-   Function for the Main Program
+          Function for the Main Program
    ****************************************************/
 
   //------------------------------------------------------------------------------------------
 
   if (gameState == "START") {
-    startGame(); // presents start screen
+    startGame(); // displays start screen
   } // start screen ends
 
   else if (gameState == "PLAY") {
@@ -198,7 +198,7 @@ void draw()
 
     /** Represent the Lives of the Player **/
 
-    lives(); // calls lives represent function
+    lives(); // calls lives function to represent the lives left of the player
 
     //------------------------------------------------------------------------------------------
 
@@ -240,7 +240,7 @@ void draw()
 void startGame()
 {
   /****************************************************
-   Function for the Start Screen
+           Function for the Start Screen
    ****************************************************/
 
   image(start, 0, 0); // displays start screen image
@@ -371,7 +371,7 @@ void keyReleased()
       gameMusic.stop(); // stops game music
       setup(); // calls setup screen if 'P' or 'p' is pressed
     }
-  } // switch to main from end game screen and stops game music to avoid an amplified loop
+  } // switch to main from end game screen(s) and stops game music to avoid an amplified loop
 }
 
 void mousePressed()
@@ -396,7 +396,7 @@ void mousePressed()
     if (gameState == "END GAME") {
       gameMusic.stop(); // stops game music
       setup(); // calls setup screen if mouse is clicked
-    } // switch to main from end game screen and stops game music to avoid an amplified loop
+    } // switch to main from end game screen(s) and stops game music to avoid an amplified loop
 
     // NOTE: only uses mouse if a key is not pressed at the same time
   }
@@ -436,7 +436,7 @@ void endGame()
 
 {
   /****************************************************
-   Function for the End Screen(s)
+          Function for the End Screen(s)
    ****************************************************/
 
   /** Continues Moving Background Image **/
@@ -474,7 +474,7 @@ void endGame()
 void maxScore() {
 
   /****************************************************
-   Function for if the Player Reaches the Max Score
+      Function for if the Player Reaches the Max Score
    ****************************************************/
 
   image(maxScoreScreen, 0, 0);  // places the max score screen image
@@ -521,7 +521,7 @@ void livesLeft() {
 
   if (livesLeft >= 1) {
 
-    image(end, endX-15, 0); // displays game over image
+    image(gameOver, gameOverX-15, 0); // displays game over image
 
     // styling for game over screen text
     fill(230, 202, 202);
