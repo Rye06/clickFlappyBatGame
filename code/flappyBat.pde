@@ -3,18 +3,6 @@
  ** NOTE: You can play using arrow keys OR mouse
  **/
 
-/** STEPS LEFT:
- 
- * Get new walls
- * Lag in music playing
- * Death Animation
- 
- * change game over tune
- * change temporary game over text
- * make the textures better in start screen
- 
- **/
-
 //------------------------------------------------------------------------------------------
 
 /** Imports Sound Library **/
