@@ -1,2 +1,2 @@
 # Flappy Bat
-Created by Shaurya(Rye)
+Created By Shaurya (Rye)
