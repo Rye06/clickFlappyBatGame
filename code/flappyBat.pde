@@ -10,7 +10,7 @@
 import processing.sound.*;
 
 /***************************************************
- Global Essential Variables of the Game
+      Global Essential Variables of the Game
  ****************************************************/
 
 /** Images **/
@@ -95,7 +95,7 @@ void setup()
 {
 
   /****************************************************
-   Sets up configuration for the program
+        Sets up configuration for the program
    ****************************************************/
 
   size(600, 800); // size of game window
@@ -282,7 +282,7 @@ void initBat()
 {
 
   /****************************************************
-   Function for Initliazing Bat Array
+           Function for Initliazing Bat Array
    ****************************************************/
 
   /** Adds Bat Elements to the Array **/
@@ -298,7 +298,7 @@ void initBat()
 void setBGScore()
 {
   /****************************************************
-   Function for the Background of the Game and Score
+     Function for the Background of the Game and Score
    ****************************************************/
 
   /** Background **/
@@ -324,7 +324,7 @@ void setBGScore()
 void setPipesCollide()
 {
   /*******************************************************
-   Function for the Walls in the Game and Checks for Collsion
+  Function for the Walls in the Game and Checks for Collsion
    ******************************************************/
 
   for (int i = 0; i < wallX.length; i++)
@@ -351,7 +351,7 @@ void keyReleased()
 {
 
   /****************************************************
-   Function for the Movement of the Bat by Arrow Keys
+    Function for the Movement of the Bat by Arrow Keys
    ****************************************************/
 
   /** Moves the bat Up or Down Based on Arrow Keys and Gravity **/
@@ -378,7 +378,7 @@ void mousePressed()
 {
 
   /****************************************************
-   Function for the Movement of the Bat by Mouse
+      Function for the Movement of the Bat by Mouse
    ****************************************************/
 
   /** Moves the bat Up or Down Based on Gravity and Mouse being Pressed **/
@@ -407,7 +407,7 @@ void death()
 {
 
   /****************************************************
-   Function for the Death of the Bat
+          Function for the Death of the Bat
    ****************************************************/
 
   death.play(); // plays death music
@@ -422,7 +422,7 @@ void death()
 void newGame()
 {
   /****************************************************
-   Function for a New Game
+                Function for a New Game
    ****************************************************/
 
   /** Resets Variables **/
@@ -510,7 +510,7 @@ void maxScore() {
 void livesLeft() {
 
   /*****************************************************************************
-   Function to Display the Appropriate Screen Depending on the Lives Left
+      Function to Display the Appropriate Screen Depending on the Lives Left
    ******************************************************************************/
 
   if (highScore < score) {
