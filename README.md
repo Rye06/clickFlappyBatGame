@@ -1,2 +1,2 @@
-# clickFlappyBatGame
-Flappy Bat
+# Flappy Bat
+Created by Shaurya(Rye)
