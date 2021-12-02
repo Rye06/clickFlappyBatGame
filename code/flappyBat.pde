@@ -84,6 +84,7 @@ String gameState; // state of the game
 
 boolean continueGame = false; // continue the game or not
 boolean mousePressAct; // boolean variable to check if mouse press action is wanted or not
+boolean keyReleaseAct; // boolean variable to check if key release action is wanted or not
 
 /** Player Related Variables **/
 
@@ -195,6 +196,7 @@ void setup()
   }
 
   mousePressAct = true; // enables the working of the mouse press action
+  keyReleaseAct = true; // enables the working of the key release action
 
   gameState = "START"; // sets game state to "START" screen
 
@@ -274,6 +276,8 @@ void startGame()
    ****************************************************/
 
   image(start, 0, 0); // displays start screen image
+  
+  keyReleaseAct = false; // disables the use of keys in the start screen
 
   if (continueGame) {
 
@@ -292,6 +296,7 @@ void startGame()
   } // if its a new game
 
   if (mousePressed) {
+    keyReleaseAct= true; // re-enables the key press act
     gameState = "PLAY";
   } // checks for mouse press and changes to the main "PLAY" screen
 }
@@ -436,7 +441,7 @@ void keyReleased()
 
   /** Moves the bat Up or Down Based on Arrow Keys and Gravity **/
 
-  if (keyCode == UP) {
+  if (keyCode == UP && keyReleasedAct) {
     batFrame = 1; // changes the bat frame
     batFlap.play(); // plays flap music when bat flaps
 
