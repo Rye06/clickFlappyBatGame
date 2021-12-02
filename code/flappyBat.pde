@@ -536,6 +536,8 @@ void endGame()
   if (backgroundX == -1800) {
     backgroundX = 0;
   } // resets background once first image is fully moved through
+  
+  keyReleaseAct = false; // eliminates the use of keys during the end screen(s)
 
   /** If the Player Reaches the Max Score **/
 
