@@ -593,7 +593,7 @@ void maxScore() {
 void livesLeftScreen() {
 
   /*****************************************************************************
-   Function to Display the Appropriate Screen Depending on the Lives Left
+   Function to Display the Appropriate Screen Depending on the Lives Left of the Player
    ******************************************************************************/
 
   if (highScore < score) {
