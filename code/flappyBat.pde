@@ -367,22 +367,22 @@ void setPipesCollideBoosts()
 
     /** Double Score **/
 
-    if (i%6==0 && i > 8) {
+    if (i%6==0 && i > 7) {
       image(doubleScores[i], wallX[i], doubleScoreY[i]+500); // places the double score image on the screen
 
       if (dist(wallX[i], doubleScoreY[i] + 500, batX, batY) <= 30) {
         doubleScoreCheck[i]=1; // sets the doubles check to true (or 1)
       }
-    } // presents the double score boost every 6 walls after a total of 8 walls have been successfully passed
+    } // presents the double score boost every 6 walls after a total of 7 walls have been successfully passed
 
     /** Increase Lives**/
 
-    if (i%9==0 && i > 15) {
+    if (i%9==0 && i > 12) {
       image(increaseLives[i], wallX[i], increaseLiveY[i]+500); // places the heart image on the screen for live increase boost
       if (dist(wallX[i], increaseLiveY[i] + 500, batX, batY) <=50) {
         increasesLiveCheck[i]=1; // sets the increase live check to true (or 1)
       }
-    } // presents the increase lives boost every 9 walls after a total of 15 walls have been successfully passed
+    } // presents the increase lives boost every 9 walls after a total of 12 walls have been successfully passed
 
 
     /** Collision with Wall Detection or if Bat goes off the Screen + Calling Live Increase Function + Double Score Function **/
