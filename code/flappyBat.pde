@@ -88,7 +88,7 @@ String gameState; // state of the game
 /** Other Crucial Variables **/
 
 boolean continueGame = false; // continue the game or not
-boolean mousePressAct; // boolean variable to check if mouse press action is wanted
+boolean mousePressAct; // boolean variable to check if mouse press action is wanted or not
 
 /** Player Related Variables **/
 
@@ -103,7 +103,7 @@ boolean maxScoreOnce = false; // checks to see if the user has reached max score
 
 /** Counter of Loop **/
 
-int counterLoopCollision = 0; // maintains the counter of the loop collision
+int counterLoopCollision = 0; // maintains the counter of the collision with the wall
 
 //------------------------------------------------------------------------------------------
 
@@ -133,7 +133,7 @@ void setup()
   gravity = 0;
   score = 0;
 
-  /** Resets Counter of the Loop Collision **/
+  /** Resets Counter of the Collision with the Wall **/
 
   counterLoopCollision = 0;
 
@@ -320,12 +320,12 @@ void initBat()
    Function for Initliazing Bat Array
    ****************************************************/
 
-  /** Adds Bat Elements to the Array **/
+  /** Adds Bat Frames to the Array **/
 
   for (int f = 0; f < frames; f++) {
 
-    bats[f] = loadImage("bat" + f +".png"); // loads bat images
-    bats[f].resize(width/15, width/20); // resizes bat images
+    bats[f] = loadImage("bat" + f +".png"); // loads bat frame images
+    bats[f].resize(width/15, width/20); // resizes the bat frame images
     batFrame = 0; // sets bat frame to the first one or 0
   }
 }
@@ -333,10 +333,10 @@ void initBat()
 void setBGScore()
 {
   /****************************************************
-   Function for the Background of the Game +  Score
+   Function for the Background of the Game + Displaying the Score
    ****************************************************/
 
-  /** Background **/
+  /** Places and Moves the Background **/
 
   image(backgroundPic, backgroundX, 0);  // draws background image on screen
   image(backgroundPic, backgroundX+backgroundPic.width, 0); // places second background image on screen
@@ -345,7 +345,7 @@ void setBGScore()
 
   if (backgroundX == -1800) {
     backgroundX = 0;
-  } // resets background once first image is fully done
+  } // resets background once first image is fully moved through
 
   // Score Text
 
@@ -358,38 +358,39 @@ void setBGScore()
 
 void setPipesCollideBoosts()
 {
-  /***********************************************************************************************
+  /******************************************************************************************************
    Function for Placing the Walls in the Game + Checks for Collsion + Checks for Player Capturing Boosts
-   **********************************************************************************************/
+   ******************************************************************************************************/
 
   for (int i = 0; i < wallX.length; i++)
   {
-    doubleScoreCheck[i]=0; // sets the first element of this array to false
+    doubleScoreCheck[i]=0; // sets the first element of the double score check array to false(or 0)
+    increasesLiveCheck[i]=0; // sets the first element of the increase lives check array to false(or 0)
 
     image(topWall, wallX[i], wallY[i]-400); // places first (top) wall image on screen
     image(bottomWall, wallX[i], wallY[i]+680); // places second (bottom) wall image on screen
 
     /** Double Score **/
 
-    if (i%6==0 && i > 10) {
+    if (i%6==0 && i > 8) {
       image(doubleScores[i], wallX[i], doubleScoreY[i]+500); // places the double score image on the screen
 
       if (dist(wallX[i], doubleScoreY[i] + 500, batX, batY) <= 30) {
-        doubleScoreCheck[i]=1; // sets the doubles check to true
+        doubleScoreCheck[i]=1; // sets the doubles check to true (or 1)
       }
-    } // presents the double score boost every 6 walls after a total of 10 walls have been successfully passed
+    } // presents the double score boost every 6 walls after a total of 8 walls have been successfully passed
 
     /** Increase Lives**/
 
-    if (i%9==0 && i > 20) {
+    if (i%9==0 && i > 15) {
       image(increaseLives[i], wallX[i], increaseLiveY[i]+500); // places the heart image on the screen for live increase boost
       if (dist(wallX[i], increaseLiveY[i] + 500, batX, batY) <=50) {
-        increasesLiveCheck[i]=1; // sets the increase live check to true
+        increasesLiveCheck[i]=1; // sets the increase live check to true (or 1)
       }
-    } // presents the increase lives boost every 9 walls after a total of 20 walls have been successfully passed
+    } // presents the increase lives boost every 9 walls after a total of 15 walls have been successfully passed
 
 
-    /** Collision with Wall Detection or if Bat goes off the Screen + Calling Live Increase + Double Score Functions **/
+    /** Collision with Wall Detection or if Bat goes off the Screen + Calling Live Increase Function + Double Score Function **/
 
     if (((batX < wallX[i]+45 && batX > wallX[i]-25) && (batY >= wallY[i]+660 || batY <= wallY[i] + 400))|| batY > height) {
       if (counterLoopCollision == 0) {
@@ -402,11 +403,11 @@ void setPipesCollideBoosts()
       if (doubleScoreCheck[i] == 1) {
         doubleScoreY[i] = doubleScoreY[i] - 5000; // makes the double score image disappear once captured
         doubleScore(); // calls the double score function
-      } // checks to call if the double score function if the double score check is true
+      } // if the player collides with the double score boost
       else if (increasesLiveCheck[i] == 1) {
         increaseLiveY[i] = increaseLiveY[i] -5000; // makes the heart image disappear once captured
         increaseLives(); // calls the increase lives function
-      }
+      } // if the player collides with the increase live boost
     } // increments score by 1 if no collision is found
 
     wallX[i]-=5; // scrolls through the walls
@@ -534,7 +535,7 @@ void endGame()
 
   if (backgroundX == -1800) {
     backgroundX = 0;
-  } // resets background once first image is fully done
+  } // resets background once first image is fully moved through
 
   /** If the Player Reaches the Max Score **/
 
