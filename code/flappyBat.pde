@@ -4,11 +4,6 @@
  ** NEW Extra Features Added: Double Score + Extra Lives
  **/
 
-/*
- * Add game finished mario end sound
- * Add border to double score image
- */
-
 //------------------------------------------------------------------------------------------
 
 /** Imports Sound Library **/
