@@ -441,7 +441,7 @@ void keyReleased()
 
   /** Moves the bat Up or Down Based on Arrow Keys and Gravity **/
 
-  if (keyCode == UP && keyReleasedAct) {
+  if (keyCode == UP && keyReleaseAct) {
     batFrame = 1; // changes the bat frame
     batFlap.play(); // plays flap music when bat flaps
 
