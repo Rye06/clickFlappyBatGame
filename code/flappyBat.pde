@@ -367,13 +367,13 @@ void setPipesCollideBoosts()
 
     /** Double Score **/
 
-    if (i%6==0 && i > 7) {
+    if (i%5==0 && i > 7) {
       image(doubleScores[i], wallX[i], doubleScoreY[i]+500); // places the double score image on the screen
 
       if (dist(wallX[i], doubleScoreY[i] + 500, batX, batY) <= 30) {
         doubleScoreCheck[i]=1; // sets the doubles check to true (or 1)
       }
-    } // presents the double score boost every 6 walls after a total of 7 walls have been successfully passed
+    } // presents the double score boost every 5 walls after a total of 7 walls have been successfully passed
 
     /** Increase Lives**/
 
