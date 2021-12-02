@@ -276,7 +276,7 @@ void startGame()
    ****************************************************/
 
   image(start, 0, 0); // displays start screen image
-  
+
   keyReleaseAct = false; // disables the use of keys in the start screen
 
   if (continueGame) {
@@ -372,22 +372,22 @@ void setPipesCollideBoosts()
 
     /** Double Score **/
 
-    if (i%5==0 && i > 7) {
+    if (i%25==0 && i > 20) {
       image(doubleScores[i], wallX[i], doubleScoreY[i]+500); // places the double score image on the screen
 
-      if (dist(wallX[i], doubleScoreY[i] + 500, batX, batY) <= 30) {
+      if (dist(wallX[i], doubleScoreY[i] + 500, batX, batY) <= 40) {
         doubleScoreCheck[i]=1; // sets the doubles check to true (or 1)
       }
-    } // presents the double score boost every 5 walls after a total of 7 walls have been successfully passed
+    } // presents the double score boost every 25 walls after a total of 20 walls have been successfully passed
 
     /** Increase Lives**/
 
-    if (i%9==0 && i > 12) {
+    if (i%36==0 && i > 27) {
       image(increaseLives[i], wallX[i], increaseLiveY[i]+500); // places the heart image on the screen for live increase boost
       if (dist(wallX[i], increaseLiveY[i] + 500, batX, batY) <=50) {
         increasesLiveCheck[i]=1; // sets the increase live check to true (or 1)
       }
-    } // presents the increase lives boost every 9 walls after a total of 12 walls have been successfully passed
+    } // presents the increase lives boost every 36 walls after a total of 27 walls have been successfully passed
 
 
     /** Collision with Wall Detection or if Bat goes off the Screen + Calling Live Increase Function + Double Score Function **/
@@ -448,7 +448,7 @@ void keyReleased()
     delay(5); // delays the bat frame change by 5ms
     batFrame = 2; // moves to last frame
 
-    gravity-=15; // decreases gravity in game
+    gravity = -12; // decreases gravity in game
   } // moves the bat up if the up arrow key is pressed
 
   if (gameState == "END GAME") {
@@ -475,7 +475,7 @@ void mousePressed()
       delay(5); // delays the bat frame change by 5ms
       batFrame = 2; // moves to last frame
 
-      gravity-=15; // decreases gravity in game
+      gravity = -12; // decreases gravity in game
     } // moves the bat up if the mouse is pressed
 
     if (gameState == "END GAME") {
@@ -536,7 +536,7 @@ void endGame()
   if (backgroundX == -1800) {
     backgroundX = 0;
   } // resets background once first image is fully moved through
-  
+
   keyReleaseAct = false; // eliminates the use of keys during the end screen(s)
 
   /** If the Player Reaches the Max Score **/
