@@ -1,680 +1,323 @@
-/** Flappy Bat Game
- ** Created by Rye
- ** NOTE: You can play using arrow key OR mouse
- ** NEW Extra Features Added: Double Score + Extra Lives
+/** Game Name: SpaceStar
+ * Developer: Rye
  **/
 
-//------------------------------------------------------------------------------------------
+/****************************************
+ ****
+ Main Class
+ ****
+ ***************************************/
 
-/** Imports Sound Library **/
+// ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
 
-import processing.sound.*;
+/************************************
+ ***
+ Global Variables
+ ***
+ **************************************/
 
-/***************************************************
- Global Essential Variables of the Game
- ****************************************************/
-
-/** Images **/
-
-PImage start; // start screen image
+/** Images in the Game **/
+PImage home; // home screen image
+PImage playerSpaceship; // player's spaceship
+PImage enemySpaceship; // enemy's spaceship
 PImage backgroundPic; // background image
-PImage topWall; // top wall image
-PImage bottomWall; // bottom wall image
-PImage gameOver; // game over image
-PImage gameFinished; // game finished image
-PImage maxScoreScreen; // max score screen image
+PImage[] playerBullets; // bullet image array (player)
+PImage[] enemyBullets; // bullet image array (enemy)
+PImage playButton; // play button image
 
-/** Double Score **/
+/** Player **/
+Player player; // player object
 
-PImage[] doubleScores; // double score image array
-PImage doubleScore; // double score image
-int[] doubleScoreCheck; // checks for double image being touched
-int[] doubleScoreY; // y coordinates of the double score images
+/** Background **/
+int backgroundY; // y axis of the background image
 
-/** Increase Lives **/
+/** Screens and Chapters of the Game **/
+String screens; // screens of the game
+String chapters; // chapters of the game
 
-PImage[] increaseLives; // increase lives image array
-PImage heart; // heart image
-int heartX = 0; // heart image x coordinate
-int[] increasesLiveCheck; // checks for the increase live image being touched
-int[] increaseLiveY; // y coordinates of the increase live images
+/** Player's Bullet **/
+Bullet playerBullet; // bullet object (player)
+int currentPlayerBullet; // current bullet being used by the player
+int minPosPlayerBulletY; // minimum position the player's bullet must reach in order to fire the next one
 
-/** Animated Font **/
+/** Enemy **/
+Enemy enemy; // enemy object
 
-PFont animatedFont;
+/** Enemy's Bullet **/
+Bullet enemyBullet; // bullet object (enemy)
+int currentEnemyBullet; // current bullet being used by the enemy
+int minPosEnemyBulletY; // minimum position the enemy's bullet must reach in order to fire the next one
+int enemyCurShootTime; // current time to determine when to shoot the enemy bullet
+boolean enemyReduceLife; // reduce life of enemy or not
 
-/** Bat Variables and Bat Frames **/
+/** Play Button **/
+int playButtonX; // x coordinate of the button
+int playButtonY; // y coordinate of the button
+int playButtonW; // width of the button
+int playButtonH; // height of the button
 
-PImage[] bats; // frame bat images
-int batFrame; // current frame of the bat
-int frames = 3; // frames of the bat
 
-int batX = 0; // x-axis of the bat
-int batY = 0; // y-axis of the bat
+// ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
 
-/** Sounds **/
+/************************************
+ ***
+ Setup of the Game
+ ***
+ **************************************/
 
-SoundFile death;
-SoundFile gameMusic;
-SoundFile batFlap;
+void setup() {
 
-/** Different Coordinates **/
+  size(870, 680); // size of the window
 
-int backgroundX; // x axis of the background image
-int gameOverX; // x axis of the game over screen
-int gameFinishedX; // x axis of the game finished screen
+  /** Home Screen **/
+  home = loadImage("home.png"); // loads the home screen image
 
-int[] wallX; // wall x-axis array
-int[] wallY; // wall y-axis array
+  /** Background of the Game **/
+  backgroundPic = loadImage("background.png"); // loads the background image
+  backgroundY = 0; // y coordinate of the background
 
-float gravity = 0; // gravity in game
+  /** Player **/
+  player = new Player(100, width-600, height-250);
+  playerSpaceship = loadImage("playerSpaceship.png"); // loads the player's spaceship
+  playerSpaceship.resize(380, 260); // resizes the player's spaceship
 
-/** Game States **/
+  /** Player's Bullet **/
+  playerBullet = new Bullet(); // initializes the player bullet object
+  playerBullet.playerInitBulletPos(); // sets the initial player bullet position
+  currentPlayerBullet = 0; // current player bullet is 0 (first one)
+  minPosPlayerBulletY = -500; // minimum position for player's bullet to reach before shooting a new one
+  playerBullets = new PImage[6]; // initializes the bullet image array (player)
+  playerBullet.playerCreateBullets(); // creates the bullets image array (player)
 
-String gameState; // state of the game
+  /** Enemy **/
+  enemy = new Enemy(100, width-545, height-655); // initializes the enemy object
+  enemySpaceship = loadImage("enemySpaceship.png"); // loads the enemy's spaceship
+  enemySpaceship.resize(250, 200); // resizes the enemy's spaceship
 
-// 3 states-
+  /** Enemy's Bullet **/
+  enemyBullet = new Bullet(); // initializes the enemy bullet object
+  currentEnemyBullet = 0; // current player bullet is 0 (first one)
+  minPosEnemyBulletY = 1180; // minimum position for enemy's bullet to reach before shooting a new one
+  enemyBullets = new PImage[6]; // initializes the bullet image array (enemy)
+  enemyBullet.enemyCreateBullets(); // creates the bullets image array (enemy)
+  enemyCurShootTime = 0; // current enemy shoot time is set to 0
+  enemyReduceLife = true; // allowed to reduce enemy's life
 
-// 1. START Screen
-// 2. PLAY/Main Screen (also called "backgroundPic" or as background screen)
-// 3. END GAME Screen (Game Over/Game Finished)
-// 4. Max Score Screen (maxScoreScreen) (Called only if the Player Reaches the Max Score)
+  /** Play Button **/
+  playButton = loadImage("playButton.png"); // play button is loaded in
+  playButton.resize(275, 55); // resizes the play button
+  playButtonX = width-545; // x coordinate of the button initialized
+  playButtonY = height-250; // y coordinate of the button initialized
+  playButtonW = playButton.width; // width of the button initialized
+  playButtonH = playButton.height; // height of the button initialized
 
-/** Other Crucial Variables **/
+  /** Game States **/
+  screens = "Home"; // sets the game state to the home screen
+  chapters = "Start"; // first chapter is set to "The Start"
+} // end setup
 
-boolean continueGame = false; // continue the game or not
-boolean mousePressAct; // boolean variable to check if mouse press action is wanted or not
-boolean keyReleaseAct; // boolean variable to check if key release action is wanted or not
 
-/** Player Related Variables **/
+/************************************
+ ***
+ Main Draw Loop of the Game
+ ***
+ **************************************/
 
-int score = 0; // score of player
-int highScore = 0; // high score of player
-int livesLeft = 3; // 3 lives of player
+void draw() {
 
-/** Max Score **/
+  backgroundStars(); // calls the background game screen function
 
-int maxScore = 100; // max score of the game
-boolean maxScoreOnce = false; // checks to see if the user has reached max score once or not
-
-/** Counter of Loop **/
-
-int counterLoopCollision = 0; // maintains the counter of the collision with the wall
-
-//------------------------------------------------------------------------------------------
-
-void setup()
-{
-
-  /****************************************************
-   Sets up configuration for the program
-   ****************************************************/
-
-  size(600, 800); // size of game window
-
-  /** Initializes the Bat Coordinates **/
-
-  batX = 50;
-  batY = 320;
-
-  /** Resets Global Coordinates **/
-
-  backgroundX = 0;
-  gameOverX = 0;
-  gameFinishedX = 0;
-  heartX = 0;
-
-  /** Resets Other Variables **/
-
-  gravity = 0;
-  score = 0;
-
-  /** Resets Counter of the Collision with the Wall **/
-
-  counterLoopCollision = 0;
-
-  /** Loads Sounds **/
-
-  gameMusic = new SoundFile(this, "menu.wav");
-  death = new SoundFile(this, "death.wav");
-  batFlap = new SoundFile(this, "batFlap.wav");
-
-  /** Loads Images **/
-
-  backgroundPic = loadImage("background.png"); // loads background image
-  start = loadImage("start.png"); // loads start screen image
-  gameOver = loadImage("gameOver.png"); // loads game over screen overlay image
-  maxScoreScreen = loadImage("maxScoreScreen.png"); // loads max score screen overlay image
-  topWall = loadImage("wall.png"); // loads wall image (for the top)
-  bottomWall = loadImage("wall.png"); // loads wall image (for the bottom)
-  gameFinished = loadImage("gameFinished.png"); // loads game finished image
-
-  /** Double Score Initialization **/
-
-  doubleScores = new PImage[backgroundPic.width]; // initializes double score image array
-  doubleScore = loadImage("doubleScore.png"); // loads double score image
-  doubleScoreCheck = new int[backgroundPic.width]; // creates the double score check array
-  doubleScoreY = new int[backgroundPic.width]; // sets the y coordinate of the double score image to 0
-
-  /** Increase Live Initialization **/
-
-  increaseLives = new PImage[backgroundPic.width]; // initializes increase live image array
-  heart = loadImage("heart.png"); // loads heart image
-  heart.resize(width/15, width/20); // resizes heart images
-  increasesLiveCheck = new int[backgroundPic.width]; // creates the increase lives check array
-  increaseLiveY = new int[backgroundPic.width]; // sets the y coordinate of the increase live image to 0
-
-  /** Creates The Animated Font **/
-
-  animatedFont = createFont("minecraft.ttf", 24);
-
-  /** Sets The Animated Font **/
-
-  textFont(animatedFont);
-
-  bats = new PImage[frames]; // initializes the bat array of frames
-
-  initBat(); // draws the bat on screen
-
-  /** Intializes the Wall Coordinates **/
-
-  wallX = new int[backgroundPic.width]; // x coordinate of the wall
-  wallY = new int[wallX.length]; // y coordinate of the wall
-
-  /** Adds Values to the Wall Coordinate Arrays + Double Score Arrays + Extra Lives Arrays **/
-
-  for (int k = 0; k < wallX.length; k++)
-  {
-    wallX[k] = (200 * k) + 600;
-    wallY[k] = int(random(-350, 0));
-
-    doubleScores[k] = doubleScore;  // adds double score image to the array
-    increaseLives[k] = heart;  // adds heart image to the increase lives array
-
-    doubleScoreY[k] = wallY[k]; // adds the wall Y element to double score y coordinate array
-    increaseLiveY[k] = wallY[k]; // adds the wall Y element to increase lives y coordinate array
-  }
-
-  mousePressAct = true; // enables the working of the mouse press action
-  keyReleaseAct = true; // enables the working of the key release action
-
-  gameState = "START"; // sets game state to "START" screen
-
-  gameMusic.loop(); // plays main game music in a loop
+  if (screens == "Home") {
+    home(); // calls home screen function
+  } // home screen ends
+  else if (screens == "Play") {
+    playScreen(); // calls play screen function
+  } // play screen ends
 }
 
-//------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
 
-void draw()
-{
+/************************************
+ ***
+ In game Screens Functions
+ ***
+ **************************************/
 
-  /****************************************************
-   Function for the Main Program
-   ****************************************************/
+void home() {
 
-  //------------------------------------------------------------------------------------------
+  /****************************************
+   Home Screen
+   ***************************************/
+  image(home, 0, 0); // loads home screen image
 
-  if (gameState == "START") {
-    startGame(); // displays start screen
-  } // start screen ends
-
-  else if (gameState == "PLAY") {
-
-    //------------------------------------------------------------------------------------------
-
-    /** Background + Display Score **/
-
-    setBGScore(); // calls background and displaying score function
-
-    //------------------------------------------------------------------------------------------
-
-    /** Represent the Lives of the Player **/
-
-    lives(); // calls lives function to represent the lives left of the player
-
-    //------------------------------------------------------------------------------------------
-
-    /** Placing Bat and Wall on Screen + Checking for Collisions and Boosts **/
-
-    setPipesCollideBoosts(); // calls the function to place wall images + check for collisions + check for player capturing boosts
-
-    image(bats[batFrame], batX, batY);  // draws bat image on screen based on frame
-    delay(6); // delay 6ms before resetting bat frame
-    batFrame = 0; // resets bat frame
-
-    batX+=.5; // moves the bat forward
-
-    /** Moves bat down based on gravity acceleration **/
-
-    gravity+= 1; // increase gravity in game
-    batY+=gravity; // moves the bat based on the gravity
-  } // play or main screen ends
-
-  //------------------------------------------------------------------------------------------
-
-  /** End Game **/
-
-  else if (gameState == "END GAME") {
-    endGame(); // calls end game function
-  } // end game screen ends
-
-  //------------------------------------------------------------------------------------------
-
-  // MAIN CODE FINISHED
-}
-
-//------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------
-
-/** Other Functions Used **/
-
-void startGame()
-{
-  /****************************************************
-   Function for the Start Screen
-   ****************************************************/
-
-  image(start, 0, 0); // displays start screen image
-
-  keyReleaseAct = false; // disables the use of keys in the start screen
-
-  if (continueGame) {
-
-    // styling for high score text
-    fill(255);
-    textSize(30);
-
-    text("High Score: " + highScore, width-410, height-50); // displays high score on main screen
-  } // if game is being continued
-  else {
-    // styling for new game text
-    fill(255);
-    textSize(30);
-
-    text("New Game", width-390, height-40); // displays new game on main screen
-  } // if its a new game
+  image(playButton, playButtonX, playButtonY);
 
   if (mousePressed) {
-    keyReleaseAct= true; // re-enables the key press act
-    gameState = "PLAY";
-  } // checks for mouse press and changes to the main "PLAY" screen
-}
-
-void lives()
-{
-
-  /****************************************************
-   Function for Representing the Lives Left of the Player
-   ****************************************************/
-
-  for (int s = 0; s < livesLeft; s++) {
-    image(heart, heartX+(s*30), 0);
-  } // displays the lives left of the player with hearts
-}
-
-void initBat()
-{
-
-  /****************************************************
-   Function for Initliazing Bat Array
-   ****************************************************/
-
-  /** Adds Bat Frames to the Array **/
-
-  for (int f = 0; f < frames; f++) {
-
-    bats[f] = loadImage("bat" + f +".png"); // loads bat frame images
-    bats[f].resize(width/15, width/20); // resizes the bat frame images
-    batFrame = 0; // sets bat frame to the first one or 0
+    if (mouseX>playButtonX && mouseX <playButtonX+playButtonW && mouseY>playButtonY && mouseY <playButtonY+playButtonH) {
+      screens = "Play"; // changes game state
+    }
   }
-}
 
-void setBGScore()
-{
-  /****************************************************
-   Function for the Background of the Game + Displaying the Score
-   ****************************************************/
-
-  /** Places and Moves the Background **/
-
-  image(backgroundPic, backgroundX, 0);  // draws background image on screen
-  image(backgroundPic, backgroundX+backgroundPic.width, 0); // places second background image on screen
-
-  backgroundX-=5; // scrolls through the background
-
-  if (backgroundX == -1800) {
-    backgroundX = 0;
-  } // resets background once first image is fully moved through
-
-  // Score Text
-
-  // styling for current score text
-  fill(0);
+  /** Current Chapter Display **/
   textSize(20);
-
-  text("Score: " + score, 0, 50); // current score text
+  text("Current Chapter: " + chapters, width-865, height-655);
 }
 
-void setPipesCollideBoosts()
-{
-  /******************************************************************************************************
-   Function for Placing the Walls in the Game + Checks for Collsion + Checks for Player Capturing Boosts
-   ******************************************************************************************************/
+void backgroundStars() {
 
-  for (int i = 0; i < wallX.length; i++)
-  {
-    doubleScoreCheck[i]=0; // sets the first element of the double score check array to false(or 0)
-    increasesLiveCheck[i]=0; // sets the first element of the increase lives check array to false(or 0)
+  /****************************************
+   Background of the Game
+   ***************************************/
 
-    image(topWall, wallX[i], wallY[i]-400); // places first (top) wall image on screen
-    image(bottomWall, wallX[i], wallY[i]+680); // places second (bottom) wall image on screen
+  /** Background Image **/
+  image(backgroundPic, 0, backgroundY);  // draws first background image on screen
+  image(backgroundPic, 0, backgroundY-backgroundPic.height); // places second background image on screen
 
-    /** Double Score **/
+  backgroundY+=3; // scrolls through the background
 
-    if (i%25==0 && i > 20) {
-      image(doubleScores[i], wallX[i], doubleScoreY[i]+500); // places the double score image on the screen
-
-      if (dist(wallX[i], doubleScoreY[i] + 500, batX, batY) <= 40) {
-        doubleScoreCheck[i]=1; // sets the doubles check to true (or 1)
-      }
-    } // presents the double score boost every 25 walls after a total of 20 walls have been successfully passed
-
-    /** Increase Lives**/
-
-    if (i%32==0 && i > 27) {
-      image(increaseLives[i], wallX[i], increaseLiveY[i]+500); // places the heart image on the screen for live increase boost
-      if (dist(wallX[i], increaseLiveY[i] + 500, batX, batY) <=50) {
-        increasesLiveCheck[i]=1; // sets the increase live check to true (or 1)
-      }
-    } // presents the increase lives boost every 32 walls after a total of 27 walls have been successfully passed
-
-
-    /** Collision with Wall Detection or if Bat goes off the Screen + Calling Live Increase Function + Double Score Function **/
-
-    if (((batX < wallX[i]+45 && batX > wallX[i]-25) && (batY >= wallY[i]+660 || batY <= wallY[i] + 400))|| batY > height) {
-      if (counterLoopCollision == 0) {
-        continueGame = true; // sets continuing game to true
-        death(); // calls function death for the bat
-      } // condition is only called based on the counter of the loop collision
-    } // checks for collision with wall OR if the bat falls down the screen
-    else if (batX == wallX[i]) {
-      score += 1;
-      if (doubleScoreCheck[i] == 1) {
-        doubleScoreY[i] = doubleScoreY[i] - 5000; // makes the double score image disappear once captured
-        doubleScore(); // calls the double score function
-      } // if the player collides with the double score boost
-      else if (increasesLiveCheck[i] == 1) {
-        increaseLiveY[i] = increaseLiveY[i] -5000; // makes the heart image disappear once captured
-        increaseLives(); // calls the increase lives function
-      } // if the player collides with the increase live boost
-    } // increments score by 1 if no collision is found
-
-    wallX[i]-=5; // scrolls through the walls
-  }
-}
-
-void doubleScore() {
-
-  /****************************************************
-   Function for Doubling the Score of the Player
-   ****************************************************/
-
-  score *= 2; // doubles the score
-}
-
-void increaseLives() {
-
-  /****************************************************
-   Function for Increasing Lives of the Player
-   ****************************************************/
-
-  livesLeft += 1; // inceases the lives left of the player
-}
-
-void keyReleased()
-{
-
-  /****************************************************
-   Function for the Movement of the Bat by Arrow Keys
-   ****************************************************/
-
-  /** Moves the bat Up or Down Based on Arrow Keys and Gravity **/
-
-  if (keyCode == UP && keyReleaseAct) {
-    batFrame = 1; // changes the bat frame
-    batFlap.play(); // plays flap music when bat flaps
-
-    delay(5); // delays the bat frame change by 5ms
-    batFrame = 2; // moves to last frame
-
-    gravity = -12; // decreases gravity in game
-  } // moves the bat up if the up arrow key is pressed
-
-  if (gameState == "END GAME") {
-    if (key == 'P' || key == 'p') {
-      gameMusic.stop(); // stops game music
-      setup(); // calls setup screen if 'P' or 'p' is pressed
-    }
-  } // switch to main from end game screen(s) and stops game music to avoid an amplified loop
-}
-
-void mousePressed()
-{
-
-  /****************************************************
-   Function for the Movement of the Bat by Mouse
-   ****************************************************/
-
-  /** Moves the bat Up or Down Based on Gravity and Mouse being Pressed **/
-  if (mousePressAct) {
-    if (keyPressed == false) {
-      batFrame = 1; // changes the bat frame
-      batFlap.play(); // plays flap music when bat flaps
-
-      delay(5); // delays the bat frame change by 5ms
-      batFrame = 2; // moves to last frame
-
-      gravity = -12; // decreases gravity in game
-    } // moves the bat up if the mouse is pressed
-
-    if (gameState == "END GAME") {
-      gameMusic.stop(); // stops game music
-      setup(); // calls setup screen if mouse is clicked
-    } // switch to main from end game screen(s) and stops game music to avoid an amplified loop
-
-    // NOTE: only uses mouse if a key is not pressed at the same time
-  }
-}
-
-
-void death()
-{
-
-  /****************************************************
-   Function for the Death of the Bat
-   ****************************************************/
-
-  death.play(); // plays death music
-
-  if (livesLeft >= 1) {
-    livesLeft--; // reduces live of player
-  } // only execute if the lives left are greater than 1
-
-  counterLoopCollision++; // increments counter of loop
-
-  gameState = "END GAME"; // sets game state to end screen
-}
-
-void newGame()
-{
-  /****************************************************
-   Function for a New Game
-   ****************************************************/
-
-  /** Resets Variables **/
-
-  livesLeft = 3;
-  highScore = 0;
-  score = 0;
-}
-
-void endGame()
-
-{
-  /****************************************************
-   Function for the End Screen(s)
-   ****************************************************/
-
-  /** Continues Moving Background Image **/
-
-  image(backgroundPic, backgroundX, 0);  // overrides all previous images on screen
-  image(backgroundPic, backgroundX+backgroundPic.width, 0); // places second background image on screen
-
-  backgroundX -= 5; // moves end screen background
-
-  if (backgroundX == -1800) {
-    backgroundX = 0;
+  if (backgroundY >= backgroundPic.height) {
+    backgroundY = 0;
   } // resets background once first image is fully moved through
-
-  keyReleaseAct = false; // eliminates the use of keys during the end screen(s)
-
-  /** If the Player Reaches the Max Score **/
-
-  if (score >= maxScore && livesLeft > 0 && maxScoreOnce == false) {
-    maxScore(); // calls the maxScore function
-  } // special screen if the player exceeds the max score
-
-  /** If the Player Doesn't Reach the Max Score **/
-
-  else {
-
-    // changes font for game over screen and game finished
-    animatedFont = createFont("ARCADECLASSIC.TTF", 24);
-    textFont(animatedFont);
-
-    livesLeftScreen(); // calls the lives left screen function
-  } // if player hasn't reached max score
 }
 
-void maxScore() {
+void playScreen() {
 
-  /****************************************************
-   Function for if the Player Reaches the Max Score
-   ****************************************************/
+  /****************************************
+   Play Screen
+   ***************************************/
 
-  image(maxScoreScreen, 0, 0);  // places the max score screen image
-
-  // styling for max score screen
-  fill(255);
+  /** Current Chapter Display **/
   textSize(20);
+  text("Current Chapter: " + chapters, width-865, height-655);
 
-  // text for the max score screen
-  text("Press C to continue and N to play a new game", width/2-200, height-150); // max score text // presents the user with the option to continue this game or play a new one
+  /** Generate Player and Enemy Spaceships **/
+  image(playerSpaceship, player.playerSpaceshipX, player.playerSpaceshipY); // draws the player's spaceship
+  image(enemySpaceship, enemy.enemySpaceshipX, enemy.enemySpaceshipY); // draws the enemy's spaceship
 
-  mousePressAct = false; // prevents any mouse action
+  enemy.moveEnemySpaceship(); // calls the function to move the enemy spaceship
 
-  if (keyPressed) {
-    if (key == 'N' || key == 'n') {
-      newGame(); // calls new game function
-      continueGame = false; // sets continuing game to false
-      gameMusic.stop(); // stops game music
-      setup(); // calls setup function
-    } // new game
-    else if (keyPressed) {
-      if (key == 'C' || key == 'c') {
-        highScore = score; // keeps the high score
-        continueGame = true; // displays high score on start screen
-        gameMusic.stop(); // stops game music
-        maxScoreOnce = true; // doesnt allow this prompt screen again
-        setup(); // calls setup function
-      } // continue the game
+  if (currentPlayerBullet < 6) {
+
+    /** Moves the Player's Bullet **/
+    playerBullet.playerSpeedBullet(); // bullet speed function (player)
+    playerBullet.playerBulletPosY += playerBullet.playerBulletSpeed; // moves the bullet up (player)
+
+    image(playerBullets[currentPlayerBullet], playerBullet.playerBulletPosX, playerBullet.playerBulletPosY); // places bullet image on screen (player)
+
+    playerBullet.playerBulletCollide(); // function to see if player's bullet collides with the enemy's spaceship
+  }// stop firing once mag has finished
+
+  /** Player Life Left **/
+  if (player.playerLifeLeft > 0) {
+    textSize(14);
+    text("Player Life Left: " + player.playerLifeLeft, width-860, height-50);
+  } // player is alive
+  else {
+    textSize(14);
+    text("Player is Dead", width-860, height-50);
+  } // player has died
+
+  if ((millis() - enemyCurShootTime > 2000) && (currentEnemyBullet < 5)  && (player.playerLifeLeft > 0) && (enemy.enemyLifeLeft > 0)) {
+
+    enemyBullet.enemyShoot(); // calls the shoot bullet function
+
+    if (currentEnemyBullet < 5) {
+      image(enemyBullets[currentEnemyBullet], enemyBullet.enemyBulletPosX, enemyBullet.enemyBulletPosY); // places bullet image on screen (enemy)
     }
-  } // checks to see if player wants to play a new game or continue this one
+
+    if (currentEnemyBullet == 4) {
+      currentEnemyBullet = 0; // resets enemy laser
+    } // reloads enemy laser
+
+    enemyBullet.enemyBulletCollide(); // function to see if enemy's bullet collides with the player's spaceship
+
+    currentEnemyBullet++; // increments the current bullet being used to the next one
+
+    enemyCurShootTime = millis(); // updates current time
+  } // shoot the enemy bullet after 1 second
+
+  /** Enemy Life Left **/
+  if (enemy.enemyLifeLeft > 0) {
+    textSize(14);
+    text("Enemy Life Left: " + enemy.enemyLifeLeft, width-120, height-655);
+  } // enemy is alive
+  else {
+    text("Enemy is Dead", width-120, height-655);
+  } // enemy has died
 }
 
-void livesLeftScreen() {
+// ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
 
-  /*****************************************************************************
-   Function to Display the Appropriate Screen Depending on the Lives Left of the Player
-   ******************************************************************************/
+/************************************
+ ***
+ Key Press/Mouse Press Functions
+ ***
+ **************************************/
 
-  if (highScore < score) {
-    highScore = score; // sets the high score to the new score if its less than the score
+void keyPressed() {
+
+  /****************************************
+   Performs Action Based on a Key Press
+   ***************************************/
+
+  /** Reaches the Extreme End Flags **/
+
+  boolean atRightEndFlag = false; // flag if the player's spaceship reaches off the the screen
+  boolean atLeftEndFlag = false; // flag if the player's spaceship reaches off the the screen
+
+  /** Detect if the Player's Spaceship is Moving Extremely Right or Left **/
+  if (player.playerSpaceshipX >= width-380) {
+    atRightEndFlag = true; // reaches the end flag is true
+  } // if the player's spaceship goes extremely to the right off the screen
+  else if (player.playerSpaceshipX <= 10) {
+    atLeftEndFlag = true; // reaches the end flag is true
+  } // if the player's spaceship goes extremely to the left off the screen
+
+  /** Makes sure the Player's Spaceship doesn't go off the screen **/
+  if (atRightEndFlag) {
+    if (key == 'd' || key == 'D') {
+      player.playerSpaceshipX +=0;
+    } else if (key == 'a' || key == 'A') {
+      player.playerSpaceshipX -=10;
+    }
+  } else if (atLeftEndFlag) {
+    if (key == 'a' || key == 'A') {
+      player.playerSpaceshipX -= 0;
+    } else if (key == 'd' || key == 'D') {
+      player.playerSpaceshipX +=10;
+    }
   }
 
-  /** Lives Left are Greater than 1 **/
-  /** Game Over Screen **/
-
-  if (livesLeft >= 1) {
-
-    image(gameOver, gameOverX-15, 0); // displays game over image
-
-    // styling for game over screen text
-    fill(230, 202, 202);
-
-    // changes font
-    animatedFont = createFont("yoster.ttf", 25);
-    textFont(animatedFont);
-
-    if (score == 0 && highScore == 0) {
-      text("Aww cmon try again!", width-500, height-315); // displays text if player has a score and high score of 0
-    } else {
-      text("Your High Score:  " + highScore, width-500, height-325); // display high score text
+  /** ONLY If the Player's Spaceship is NOT Moving to the Extreme Right or Left **/
+  /** Moves the Player's Spaceship Left and Right **/
+  if (player.playerSpaceshipX < width-380 && player.playerSpaceshipX > 10 && atRightEndFlag == false && atRightEndFlag == false) {
+    if (key == 'a' || key == 'A') {
+      player.playerSpaceshipX -=10;
+    } else if (key == 'd' || key == 'D') {
+      player.playerSpaceshipX += 10;
     }
-
-    // changes font for play again text
-    animatedFont = createFont("minecraft.ttf", 20);
-    textFont(animatedFont);
-
-    text("C lick  the  Mouse  or  Press  P  to  Play  Again", width-500, height-275); // displays play again text
-
-    fill(0); // changes color of text for lives left
-    text("Lives Left: " + livesLeft, width-500, height-50); // displays lives left of player
-  } // if lives of player are still left
-
-  /** Lives Left are 0 **/
-  /** Game Finished Screen **/
-
-  else {
-
-    // styling for game finished text
-    fill(230, 202, 202);
-
-    image(gameFinished, gameFinishedX+50, 0); // displays game finished image
-
-    // changes font for lives left if they are 0
-    animatedFont = createFont("yoster.ttf", 25);
-    textFont(animatedFont);
-
-    text("Your Highest Score: " + highScore, width-475, height-400); // displays final high score of player
-
-    textSize(23);// changes text size for the repeat game text
-
-    text("Would you like to continue playing or not?", width/2-250, height-300); // game finished text
-    text("Press Y to continue and N to not.", width/2-200, height-250); // game finished text asking to user to continue with a new game or close the program
-
-    // styling of lives left text
-    fill(0);
-    text("Lives Left: " + livesLeft, width-500, height-50); // displays the lives left of player
-
-    mousePressAct = false; // prevents any mouse action
-
-    if (keyPressed) {
-      if (key == 'Y' || key == 'y') {
-        newGame();
-        continueGame = false; // sets continuing game to false
-        gameMusic.stop(); // stops game music
-        maxScoreOnce = false; // sets max score reached once to false
-        setup(); // calls setup function
-      } // new game if key 'Y'/'y' is pressed
-      else if (keyPressed) {
-        if (key == 'N' || key == 'n') {
-          exit();
-        } // exits the program if the key 'N'/'n' is pressed
-      }
-    }
-  } // if lives left is 0
+  }
 }
 
-// FULL CODE FINISHES
+void mouseReleased() {
+
+  /****************************************
+   Performs Action Based on Mouse Release
+   ***************************************/
+
+  if (screens == "Play") {
+    if (millis() > 1500) {
+      if (enemy.enemyLifeLeft > 0 && player.playerLifeLeft > 0) {
+        playerBullet.playerShootBullet(); // function to shoot the player's bullet
+      } // shoot only after 1.5 seconds
+    } // shoot only if player and enemy life left are greater than 0
+  }
+}
+// ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
+
+// END MAIN PROGRAM
